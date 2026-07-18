@@ -38,7 +38,7 @@ export function Sidebar() {
       <div className="h-16 flex items-center border-b border-surface-800 px-4">
         <div className="flex items-center gap-2.5 overflow-hidden">
           <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center shrink-0">
-            <Zap className="w-4 h-4 text-white" />
+            <Zap className="w-4 h-4 text-accent-light" />
           </div>
           {!collapsed && (
             <span className="font-bold text-surface-100 truncate">DayBrief</span>
@@ -57,7 +57,7 @@ export function Sidebar() {
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                 active
-                  ? 'bg-brand-500/15 text-brand-400'
+                  ? 'bg-brand-50 text-brand-500'
                   : 'text-surface-400 hover:bg-surface-800 hover:text-surface-200'
               )}
             >

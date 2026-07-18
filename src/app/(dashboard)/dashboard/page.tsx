@@ -1,23 +1,33 @@
 import type { Metadata } from 'next'
-import { WeatherWidget } from '@/components/dashboard/WeatherWidget'
-import { TasksWidget } from '@/components/dashboard/TasksWidget'
-import { CalendarWidget } from '@/components/dashboard/CalendarWidget'
-import { EmailWidget } from '@/components/dashboard/EmailWidget'
-import { SlackWidget } from '@/components/dashboard/SlackWidget'
+import { createClient } from '@/lib/supabase/server'
+import { StatsRow } from '@/components/dashboard/StatsRow'
+import { DashboardGrid } from '@/components/dashboard/DashboardGrid'
 import { AiChatPanel } from '@/components/dashboard/AiChatPanel'
+import { normalizeLayout } from '@/lib/widgets'
 
 export const metadata: Metadata = { title: 'Dashboard' }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { data: profile } = user
+    ? await supabase
+        .from('profiles')
+        .select('timezone, dashboard_layout')
+        .eq('id', user.id)
+        .single()
+    : { data: null }
+
+  const layout = normalizeLayout(profile?.dashboard_layout)
+  const timezone = profile?.timezone ?? 'America/New_York'
+
   return (
     <div className="flex gap-6 h-full min-h-0">
-      {/* Main grid */}
-      <div className="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 auto-rows-min">
-        <WeatherWidget />
-        <TasksWidget />
-        <CalendarWidget />
-        <EmailWidget />
-        <SlackWidget />
+      {/* Main column */}
+      <div className="flex-1 min-w-0 space-y-6">
+        {user && <StatsRow userId={user.id} timezone={timezone} />}
+        <DashboardGrid initialLayout={layout} />
       </div>
 
       {/* AI chat panel */}

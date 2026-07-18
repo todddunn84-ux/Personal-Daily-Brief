@@ -1,5 +1,17 @@
 import type { Metadata } from 'next'
+import { Geist, Newsreader } from 'next/font/google'
 import './globals.css'
+
+const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist-sans',
+})
+
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-newsreader',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -22,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${geist.variable} ${newsreader.variable}`}>
       <body>{children}</body>
     </html>
   )

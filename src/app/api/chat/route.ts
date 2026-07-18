@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { isRateLimited } from '@/lib/rate-limit'
 
 const chatRequestSchema = z.object({
   messages: z
@@ -18,25 +19,6 @@ const chatRequestSchema = z.object({
     }),
 })
 
-// Per-user sliding-window rate limit. In-memory, so it resets on cold start and
-// is scoped to one server instance — a backstop against runaway spend, not a
-// distributed limiter.
-const RATE_WINDOW_MS = 5 * 60_000
-const RATE_MAX_REQUESTS = 20
-const requestLog = new Map<string, number[]>()
-
-function isRateLimited(userId: string): boolean {
-  const now = Date.now()
-  const recent = (requestLog.get(userId) ?? []).filter((t) => now - t < RATE_WINDOW_MS)
-  if (recent.length >= RATE_MAX_REQUESTS) {
-    requestLog.set(userId, recent)
-    return true
-  }
-  recent.push(now)
-  requestLog.set(userId, recent)
-  return false
-}
-
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -51,7 +33,7 @@ export async function POST(request: Request) {
     )
   }
 
-  if (isRateLimited(user.id)) {
+  if (isRateLimited('chat', user.id, 20, 5 * 60_000)) {
     return NextResponse.json(
       { error: 'Too many messages — please wait a few minutes and try again.' },
       { status: 429 }

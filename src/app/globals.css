@@ -1,36 +1,44 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand colors — indigo/violet */
-  --color-brand-50: oklch(0.97 0.02 264);
-  --color-brand-100: oklch(0.94 0.05 264);
-  --color-brand-200: oklch(0.88 0.10 264);
-  --color-brand-400: oklch(0.65 0.20 264);
-  --color-brand-500: oklch(0.55 0.24 264);
-  --color-brand-600: oklch(0.48 0.22 264);
-  --color-brand-700: oklch(0.40 0.20 264);
+  /* Brand — MilConnect navy system */
+  --color-brand-50: #EFF3FA;
+  --color-brand-100: #DEE7F5;
+  --color-brand-200: #B9CBE9;
+  --color-brand-400: #2E5BA7;
+  --color-brand-500: #1B3A6B;
+  --color-brand-600: #16305A;
+  --color-brand-700: #112441;
 
-  /* Surface colors — slate dark */
-  --color-surface-950: oklch(0.09 0.02 264);
-  --color-surface-900: oklch(0.13 0.02 264);
-  --color-surface-800: oklch(0.18 0.02 264);
-  --color-surface-750: oklch(0.21 0.02 264);
-  --color-surface-700: oklch(0.26 0.02 264);
-  --color-surface-600: oklch(0.36 0.02 264);
-  --color-surface-500: oklch(0.50 0.02 264);
-  --color-surface-400: oklch(0.63 0.02 264);
-  --color-surface-300: oklch(0.76 0.02 264);
-  --color-surface-200: oklch(0.88 0.01 264);
-  --color-surface-100: oklch(0.95 0.01 264);
+  /* Accent — MilConnect gold (accessible dark on light bg) */
+  --color-accent: #8A6F23;
+  --color-accent-light: #E8D48B;
+  --color-accent-50: #F8F3E2;
 
-  /* Semantic colors */
-  --color-success: oklch(0.65 0.15 145);
-  --color-warning: oklch(0.75 0.15 80);
-  --color-danger: oklch(0.62 0.22 25);
+  /* Surfaces — light enterprise scale.
+     NOTE: the numeric names are inherited from the original dark theme, so the
+     semantics are "950 = page background … 100 = strongest text", not
+     luminance. Keep using them the same way components always have. */
+  --color-surface-950: #F6F8FC;
+  --color-surface-900: #FFFFFF;
+  --color-surface-800: #EEF1F8;
+  --color-surface-750: #E4E9F3;
+  --color-surface-700: #D3DAE8;
+  --color-surface-600: #9AA1B8;
+  --color-surface-500: #6E7490;
+  --color-surface-400: #545A78;
+  --color-surface-300: #3D4363;
+  --color-surface-200: #2A3050;
+  --color-surface-100: #1A1F36;
+
+  /* Semantic — WCAG-safe on light backgrounds */
+  --color-success: #146C32;
+  --color-warning: #A16207;
+  --color-danger: #B3261E;
 
   /* Typography */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-display: "Inter", system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-display: var(--font-newsreader), Georgia, serif;
 
   /* Radius */
   --radius-sm: 0.375rem;
@@ -38,6 +46,30 @@
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-2xl: 1.25rem;
+
+  /* Motion */
+  --animate-fade-up: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
 }
 
 @layer base {
@@ -46,15 +78,23 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
     background-color: var(--color-surface-950);
+    background-image:
+      radial-gradient(1100px 500px at 85% -10%, rgba(27, 58, 107, 0.07), transparent 60%),
+      radial-gradient(900px 420px at -10% 15%, rgba(232, 212, 139, 0.16), transparent 55%);
+    background-attachment: fixed;
     color: var(--color-surface-100);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  .font-display {
+    font-family: var(--font-display);
   }
 
   ::selection {
@@ -68,11 +108,26 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: var(--color-surface-900);
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
     background: var(--color-surface-700);
     border-radius: 3px;
+  }
+}
+
+@layer utilities {
+  /* Loading skeleton block */
+  .skeleton {
+    border-radius: var(--radius-md);
+    background: linear-gradient(
+      90deg,
+      var(--color-surface-800) 25%,
+      var(--color-surface-750) 50%,
+      var(--color-surface-800) 75%
+    );
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
   }
 }

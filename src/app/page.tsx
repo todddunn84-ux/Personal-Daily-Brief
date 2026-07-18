@@ -38,7 +38,7 @@ export default function LandingPage() {
         <h1 className="text-5xl md:text-7xl font-bold text-surface-100 leading-tight mb-6">
           Start every day
           <br />
-          <span className="text-transparent bg-clip-text bg-linear-to-r from-brand-400 to-brand-600">
+          <span className="font-display italic font-medium text-transparent bg-clip-text bg-linear-to-r from-brand-400 via-brand-500 to-accent">
             knowing what matters
           </span>
         </h1>
@@ -143,43 +143,43 @@ export default function LandingPage() {
               icon: Calendar,
               title: 'Smart Calendar',
               desc: "See today's events from Google Calendar and Outlook. Spot conflicts before they happen.",
-              color: 'text-blue-400',
-              bg: 'bg-blue-500/10',
+              color: 'text-brand-400',
+              bg: 'bg-brand-50',
             },
             {
               icon: Mail,
               title: 'Email Digest',
               desc: "Your most important unread emails — summarized and surfaced, not buried in a cluttered inbox.",
-              color: 'text-purple-400',
-              bg: 'bg-purple-500/10',
+              color: 'text-accent',
+              bg: 'bg-accent-50',
             },
             {
               icon: CheckSquare,
               title: 'Task Manager',
               desc: "Keep your to-do list where you can see it. Set priorities, due dates, and never drop the ball.",
-              color: 'text-green-400',
-              bg: 'bg-green-500/10',
+              color: 'text-success',
+              bg: 'bg-success/10',
             },
             {
               icon: Cloud,
               title: 'Weather Briefing',
               desc: 'Know what to wear and what to plan around before you step out the door.',
-              color: 'text-sky-400',
-              bg: 'bg-sky-500/10',
+              color: 'text-brand-400',
+              bg: 'bg-brand-50',
             },
             {
               icon: MessageSquare,
               title: 'Slack Snapshot',
               desc: "See your recent Slack mentions and messages without getting sucked into the feed.",
-              color: 'text-yellow-400',
-              bg: 'bg-yellow-500/10',
+              color: 'text-accent',
+              bg: 'bg-accent-50',
             },
             {
               icon: Zap,
               title: 'AI Assistant',
               desc: "Ask your AI anything about your day. Get proactive suggestions. Take action without switching apps.",
-              color: 'text-brand-400',
-              bg: 'bg-brand-500/10',
+              color: 'text-brand-500',
+              bg: 'bg-brand-100',
             },
           ].map(({ icon: Icon, title, desc, color, bg }) => (
             <div key={title} className="bg-surface-900 border border-surface-800 rounded-xl p-6 hover:border-surface-700 transition-colors">
@@ -244,7 +244,7 @@ export default function LandingPage() {
               </span>
             </div>
             <h3 className="text-lg font-semibold text-surface-100 mb-1">Pro</h3>
-            <p className="text-4xl font-bold text-surface-100 mb-1">$12</p>
+            <p className="text-4xl font-bold text-surface-100 mb-1">$9.99</p>
             <p className="text-sm text-surface-500 mb-6">per month</p>
             <Link href="/signup">
               <Button className="w-full mb-6">Start free trial</Button>
@@ -271,9 +271,9 @@ export default function LandingPage() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-surface-800">
         <div className="grid md:grid-cols-3 gap-6 text-center">
           {[
-            { icon: Users, value: '2,400+', label: 'Active users' },
-            { icon: Star, value: '4.9/5', label: 'Average rating' },
-            { icon: Shield, value: 'SOC 2', label: 'Security compliant' },
+            { icon: Users, value: '10+', label: 'Customizable widgets' },
+            { icon: Star, value: 'AI-powered', label: 'Daily briefings' },
+            { icon: Shield, value: 'Row-level', label: 'Data security' },
           ].map(({ icon: Icon, value, label }) => (
             <div key={label} className="flex flex-col items-center gap-2">
               <Icon className="w-6 h-6 text-brand-400" />
