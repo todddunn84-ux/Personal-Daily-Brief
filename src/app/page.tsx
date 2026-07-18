@@ -285,33 +285,48 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="max-w-6xl mx-auto px-6 py-24 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-surface-100 mb-4">
-          Ready to take control of your day?
-        </h2>
-        <p className="text-surface-400 mb-8 max-w-lg mx-auto">
-          Join thousands of professionals who start their day with DayBrief.
-        </p>
-        <Link href="/signup">
-          <Button size="lg" className="gap-2">
-            Get started free <ArrowRight className="w-4 h-4" />
-          </Button>
-        </Link>
+      <section className="max-w-6xl mx-auto px-6 py-24">
+        <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-brand-500 via-brand-600 to-brand-700 px-8 py-16 text-center shadow-xl">
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(600px 300px at 85% -30%, rgba(232, 212, 139, 0.2), transparent 65%)',
+            }}
+          />
+          <div className="relative">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Ready to take control of{' '}
+              <span className="font-display italic font-medium text-accent-light">your day?</span>
+            </h2>
+            <p className="text-white/70 mb-8 max-w-lg mx-auto">
+              Join the professionals who start every morning with a clear, intelligent briefing.
+            </p>
+            <Link href="/signup">
+              <Button
+                size="lg"
+                className="gap-2 bg-white text-brand-500 hover:bg-brand-50 active:bg-brand-100 shadow-md"
+              >
+                Get started free <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-surface-800 py-8">
+      <footer className="bg-brand-700 py-8">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-brand-500 flex items-center justify-center">
-              <Zap className="w-3 h-3 text-white" />
+            <div className="w-6 h-6 rounded bg-white/10 border border-white/15 flex items-center justify-center">
+              <Zap className="w-3 h-3 text-accent-light" />
             </div>
-            <span className="text-sm font-semibold text-surface-400">DayBrief</span>
+            <span className="text-sm font-semibold text-white">DayBrief</span>
           </div>
-          <p className="text-xs text-surface-600">© 2026 DayBrief. All rights reserved.</p>
-          <div className="flex items-center gap-6 text-xs text-surface-500">
-            <Link href="/privacy" className="hover:text-surface-300">Privacy</Link>
-            <Link href="/terms" className="hover:text-surface-300">Terms</Link>
+          <p className="text-xs text-white/50">© 2026 DayBrief. All rights reserved.</p>
+          <div className="flex items-center gap-6 text-xs text-white/60">
+            <Link href="/privacy" className="hover:text-white">Privacy</Link>
+            <Link href="/terms" className="hover:text-white">Terms</Link>
           </div>
         </div>
       </footer>

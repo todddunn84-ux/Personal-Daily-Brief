@@ -90,15 +90,15 @@ export function AiChatPanel() {
   return (
     <Card className="flex flex-col h-full max-h-[calc(100vh-7rem)] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-surface-800 shrink-0">
-        <div className="w-7 h-7 rounded-full bg-brand-500 flex items-center justify-center">
-          <Zap className="w-3.5 h-3.5 text-white" />
+      <div className="flex items-center gap-2.5 px-4 py-3.5 bg-linear-to-r from-brand-500 to-brand-600 shrink-0">
+        <div className="w-7 h-7 rounded-full bg-white/10 border border-white/15 flex items-center justify-center">
+          <Zap className="w-3.5 h-3.5 text-accent-light" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-surface-100">AI Assistant</p>
-          <p className="text-xs text-surface-500">Powered by Claude</p>
+          <p className="text-sm font-semibold text-white">AI Assistant</p>
+          <p className="text-xs text-white/60">Powered by Claude</p>
         </div>
-        <div className="ml-auto w-2 h-2 rounded-full bg-success" title="Ready" />
+        <div className="ml-auto w-2 h-2 rounded-full bg-accent-light" title="Ready" />
       </div>
 
       {/* Messages */}

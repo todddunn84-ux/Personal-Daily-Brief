@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Sparkles, RefreshCw } from 'lucide-react'
-import { Card } from '@/components/ui/card'
 
 interface BriefResponse {
   content: string | null
@@ -43,17 +42,22 @@ export function DailyBriefCard() {
   }, [])
 
   return (
-    <Card className="h-full relative overflow-hidden">
-      {/* Gold-to-navy briefing accent */}
-      <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-accent-light via-accent to-brand-500" />
+    <div className="h-full relative overflow-hidden rounded-xl bg-linear-to-br from-brand-500 via-brand-600 to-brand-700 shadow-md">
+      {/* Gold atmosphere */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(420px 220px at 92% -20%, rgba(232, 212, 139, 0.22), transparent 65%)',
+        }}
+      />
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-accent-light/80 to-transparent" />
 
-      <div className="p-6">
+      <div className="relative p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-brand-500 flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5 text-accent-light" />
-            </div>
-            <h3 className="text-sm font-semibold text-surface-300 uppercase tracking-wider">
+            <Sparkles className="w-4 h-4 text-accent-light" />
+            <h3 className="text-xs font-semibold text-accent-light uppercase tracking-[0.14em]">
               Your Daily Brief
             </h3>
           </div>
@@ -62,7 +66,8 @@ export function DailyBriefCard() {
               onClick={() => fetchBrief(true)}
               disabled={refreshing}
               title="Regenerate brief"
-              className="text-surface-500 hover:text-brand-400 transition-colors disabled:opacity-40"
+              aria-label="Regenerate brief"
+              className="text-white/50 hover:text-white transition-colors disabled:opacity-40 cursor-pointer"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             </button>
@@ -71,29 +76,29 @@ export function DailyBriefCard() {
 
         {loading && (
           <div className="space-y-2.5">
-            <div className="skeleton h-5 w-full" />
-            <div className="skeleton h-5 w-11/12" />
-            <div className="skeleton h-5 w-3/4" />
+            <div className="h-5 w-full rounded-md bg-white/10 animate-pulse" />
+            <div className="h-5 w-11/12 rounded-md bg-white/10 animate-pulse" />
+            <div className="h-5 w-3/4 rounded-md bg-white/10 animate-pulse" />
           </div>
         )}
 
         {!loading && brief && (
-          <p className="font-display text-xl leading-relaxed text-surface-200">
+          <p className="font-display text-xl leading-relaxed text-white">
             {brief}
           </p>
         )}
 
         {!loading && needsKey && (
-          <p className="text-sm text-surface-500">
-            AI briefings are almost ready — an administrator needs to add an Anthropic API key to
-            enable them.
+          <p className="font-display text-lg leading-relaxed text-white/80 italic">
+            Your AI briefing will appear here each morning — a calm, two-minute read on what
+            deserves your attention today.
           </p>
         )}
 
         {!loading && !brief && !needsKey && error && (
-          <p className="text-sm text-surface-500">{error}</p>
+          <p className="text-sm text-white/70">{error}</p>
         )}
       </div>
-    </Card>
+    </div>
   )
 }
