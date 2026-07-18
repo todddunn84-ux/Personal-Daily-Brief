@@ -15,6 +15,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [confirmationSent, setConfirmationSent] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -28,7 +29,7 @@ export default function SignupPage() {
     }
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -39,6 +40,14 @@ export default function SignupPage() {
 
     if (error) {
       setError(error.message)
+      setLoading(false)
+      return
+    }
+
+    // With email confirmation enabled, signUp returns no session — the user
+    // must click the link in their inbox before they can sign in.
+    if (!data.session) {
+      setConfirmationSent(true)
       setLoading(false)
       return
     }
@@ -59,6 +68,21 @@ export default function SignupPage() {
         </div>
 
         {/* Card */}
+        {confirmationSent ? (
+          <div className="bg-surface-900 rounded-2xl border border-surface-800 p-8 text-center">
+            <h1 className="text-xl font-semibold text-surface-100 mb-2">Check your email</h1>
+            <p className="text-sm text-surface-400">
+              We sent a confirmation link to{' '}
+              <span className="text-surface-200 font-medium">{email}</span>. Click it to activate
+              your account, then sign in.
+            </p>
+            <div className="mt-6 text-center text-sm text-surface-500">
+              <Link href="/login" className="text-brand-400 hover:text-brand-300 font-medium">
+                Go to sign in
+              </Link>
+            </div>
+          </div>
+        ) : (
         <div className="bg-surface-900 rounded-2xl border border-surface-800 p-8">
           <h1 className="text-xl font-semibold text-surface-100 mb-1">Get started free</h1>
           <p className="text-sm text-surface-400 mb-6">Create your account in seconds</p>
@@ -127,6 +151,7 @@ export default function SignupPage() {
             </Link>
           </div>
         </div>
+        )}
 
         <p className="text-center text-xs text-surface-600 mt-6">
           By creating an account, you agree to our{' '}

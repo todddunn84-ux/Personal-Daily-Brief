@@ -1,9 +1,20 @@
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
+function parseCoord(value: string | null, fallback: number, min: number, max: number): number {
+  const n = Number(value)
+  return Number.isFinite(n) && n >= min && n <= max ? n : fallback
+}
+
 export async function GET(request: Request) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const { searchParams } = new URL(request.url)
-  const lat = searchParams.get('lat') ?? '40.7128'
-  const lon = searchParams.get('lon') ?? '-74.0060'
+  const lat = parseCoord(searchParams.get('lat'), 40.7128, -90, 90)
+  const lon = parseCoord(searchParams.get('lon'), -74.006, -180, 180)
 
   const apiKey = process.env.OPENWEATHER_API_KEY
   if (!apiKey) {

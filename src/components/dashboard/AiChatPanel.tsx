@@ -43,16 +43,32 @@ export function AiChatPanel() {
     setInput('')
     setLoading(true)
 
+    // Conversation history for the API: skip the canned greeting (the API
+    // requires the first message to be from the user) and keep the last 12 turns.
+    const history = [...messages.filter((m) => m.id !== '0'), userMsg]
+      .slice(-12)
+      .map(({ role, content }) => ({ role, content }))
+
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ messages: history }),
       })
 
-      if (!res.ok) throw new Error()
-      const data = await res.json()
+      if (!res.ok) {
+        const fallback =
+          res.status === 429
+            ? "You're sending messages a little fast — give it a few minutes and try again."
+            : 'Something went wrong on my end. Please try again.'
+        setMessages((prev) => [
+          ...prev,
+          { id: Date.now().toString() + '-err', role: 'assistant', content: fallback },
+        ])
+        return
+      }
 
+      const data = await res.json()
       setMessages((prev) => [
         ...prev,
         { id: Date.now().toString() + '-ai', role: 'assistant', content: data.reply },
@@ -63,7 +79,7 @@ export function AiChatPanel() {
         {
           id: Date.now().toString() + '-err',
           role: 'assistant',
-          content: 'I need to be set up with an API key to chat. Add ANTHROPIC_API_KEY to your .env file to enable AI responses.',
+          content: "I couldn't reach the server. Check your connection and try again.",
         },
       ])
     } finally {
@@ -153,6 +169,7 @@ export function AiChatPanel() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask anything about your day..."
+            maxLength={4000}
             className="flex-1 bg-surface-800 border border-surface-700 rounded-xl px-3.5 py-2 text-sm text-surface-100 placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50"
             disabled={loading}
           />

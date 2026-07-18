@@ -2,9 +2,9 @@ name: Deploy to AWS
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
 
 jobs:
   # ── Lint & type check ──────────────────────────────────────────────────
@@ -18,7 +18,7 @@ jobs:
           node-version: '22'
           cache: 'npm'
       - run: npm ci
-      - run: npx prisma generate
+      - run: npm run typecheck
       - run: npm run lint
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}

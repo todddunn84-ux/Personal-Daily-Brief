@@ -6,7 +6,7 @@ const updateTaskSchema = z.object({
   title: z.string().min(1).max(500).optional(),
   description: z.string().optional(),
   priority: z.enum(['low', 'medium', 'high']).optional(),
-  due_date: z.string().nullable().optional(),
+  due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD').nullable().optional(),
   completed: z.boolean().optional(),
 })
 
@@ -41,6 +41,9 @@ export async function PATCH(
     .select()
     .single()
 
+  if (error?.code === 'PGRST116') {
+    return NextResponse.json({ error: 'Task not found' }, { status: 404 })
+  }
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }

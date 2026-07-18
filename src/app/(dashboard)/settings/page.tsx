@@ -170,7 +170,9 @@ export default function SettingsPage() {
               <p className="text-sm font-semibold text-surface-200">Free plan</p>
               <p className="text-xs text-surface-500 mt-0.5">Upgrade for all integrations + AI chat</p>
             </div>
-            <Button variant="secondary" size="sm">Upgrade to Pro</Button>
+            <Button variant="secondary" size="sm" disabled title="Billing coming soon">
+              Upgrade to Pro
+            </Button>
           </div>
         </CardContent>
       </Card>

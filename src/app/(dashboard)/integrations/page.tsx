@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { Calendar, Mail, MessageSquare, CheckCircle, Plug } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 
 export const metadata: Metadata = { title: 'Integrations' }
 
@@ -14,7 +14,7 @@ const integrations = [
     icon: Calendar,
     color: 'text-blue-400',
     bg: 'bg-blue-500/10',
-    comingSoon: false,
+    comingSoon: true,
   },
   {
     id: 'microsoft',
@@ -24,7 +24,7 @@ const integrations = [
     icon: Mail,
     color: 'text-sky-400',
     bg: 'bg-sky-500/10',
-    comingSoon: false,
+    comingSoon: true,
   },
   {
     id: 'slack',
@@ -34,7 +34,7 @@ const integrations = [
     icon: MessageSquare,
     color: 'text-yellow-400',
     bg: 'bg-yellow-500/10',
-    comingSoon: false,
+    comingSoon: true,
   },
 ]
 

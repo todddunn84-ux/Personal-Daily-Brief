@@ -1,5 +1,41 @@
+import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
+
+const chatRequestSchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'assistant']),
+        content: z.string().min(1).max(4000),
+      })
+    )
+    .min(1)
+    .max(20)
+    .refine((msgs) => msgs[msgs.length - 1].role === 'user', {
+      message: 'Last message must be from the user',
+    }),
+})
+
+// Per-user sliding-window rate limit. In-memory, so it resets on cold start and
+// is scoped to one server instance — a backstop against runaway spend, not a
+// distributed limiter.
+const RATE_WINDOW_MS = 5 * 60_000
+const RATE_MAX_REQUESTS = 20
+const requestLog = new Map<string, number[]>()
+
+function isRateLimited(userId: string): boolean {
+  const now = Date.now()
+  const recent = (requestLog.get(userId) ?? []).filter((t) => now - t < RATE_WINDOW_MS)
+  if (recent.length >= RATE_MAX_REQUESTS) {
+    requestLog.set(userId, recent)
+    return true
+  }
+  recent.push(now)
+  requestLog.set(userId, recent)
+  return false
+}
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -15,15 +51,25 @@ export async function POST(request: Request) {
     )
   }
 
-  const { message } = await request.json()
-  if (!message?.trim()) {
-    return NextResponse.json({ error: 'Message is required' }, { status: 400 })
+  if (isRateLimited(user.id)) {
+    return NextResponse.json(
+      { error: 'Too many messages — please wait a few minutes and try again.' },
+      { status: 429 }
+    )
+  }
+
+  const parsed = chatRequestSchema.safeParse(await request.json())
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
   // Fetch user's current dashboard context to include with the AI request
-  const [{ data: tasks }] = await Promise.all([
-    supabase.from('tasks').select('title, priority, completed, due_date').eq('user_id', user.id).eq('completed', false).limit(10),
-  ])
+  const { data: tasks } = await supabase
+    .from('tasks')
+    .select('title, priority, completed, due_date')
+    .eq('user_id', user.id)
+    .eq('completed', false)
+    .limit(10)
 
   const dashboardContext = `
 The user's current dashboard data:
@@ -31,38 +77,33 @@ The user's current dashboard data:
 - Calendar, email, and Slack integrations are not yet connected
 `
 
+  const anthropic = new Anthropic({ apiKey })
+
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1024,
-        system: `You are DayBrief's AI assistant — a proactive personal assistant that helps users organize their day.
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1024,
+      output_config: { effort: 'low' },
+      system: `You are DayBrief's AI assistant — a proactive personal assistant that helps users organize their day.
 You have access to the user's current dashboard data. Be helpful, concise, and actionable.
 When the user asks about their day, tasks, calendar, or email, reference their actual data.
 If an integration isn't connected yet, encourage them to connect it on the Integrations page.
 
 ${dashboardContext}`,
-        messages: [{ role: 'user', content: message }],
-      }),
+      messages: parsed.data.messages,
     })
 
-    if (!res.ok) {
-      const err = await res.text()
-      console.error('Anthropic API error:', err)
-      throw new Error('AI request failed')
-    }
-
-    const data = await res.json()
-    const reply = data.content[0]?.text ?? 'I had trouble generating a response. Please try again.'
+    const reply = response.content.find((block) => block.type === 'text')?.text
+      ?? 'I had trouble generating a response. Please try again.'
 
     return NextResponse.json({ reply })
   } catch (err) {
+    if (err instanceof Anthropic.RateLimitError || err instanceof Anthropic.InternalServerError) {
+      return NextResponse.json(
+        { reply: 'The AI service is busy right now. Please try again in a moment.' },
+        { status: 200 }
+      )
+    }
     console.error('Chat error:', err)
     return NextResponse.json(
       { reply: 'I ran into an issue processing your request. Please try again.' },
