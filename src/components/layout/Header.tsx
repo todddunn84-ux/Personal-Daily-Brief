@@ -1,4 +1,5 @@
 import { getGreeting } from '@/lib/utils'
+import { MobileNav } from './MobileNav'
 
 interface HeaderProps {
   userName?: string | null
@@ -17,13 +18,16 @@ export function Header({ userName }: HeaderProps) {
   })
 
   return (
-    <header className="h-16 border-b border-surface-750 px-6 flex items-center justify-between bg-surface-900/70 backdrop-blur-sm shrink-0">
-      <div>
-        <h1 className="text-lg text-surface-100 leading-tight">
-          <span className="font-display italic">{greeting},</span>{' '}
-          <span className="font-semibold">{firstName}</span>
-        </h1>
-        <p className="text-xs text-surface-500">{dateStr}</p>
+    <header className="h-16 border-b border-surface-750 px-4 md:px-6 flex items-center justify-between gap-3 bg-surface-900/70 backdrop-blur-sm shrink-0">
+      <div className="flex items-center gap-2 min-w-0">
+        <MobileNav />
+        <div className="min-w-0">
+          <h1 className="text-lg text-surface-100 leading-tight truncate">
+            <span className="font-display italic">{greeting},</span>{' '}
+            <span className="font-semibold">{firstName}</span>
+          </h1>
+          <p className="text-xs text-surface-500 truncate">{dateStr}</p>
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

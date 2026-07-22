@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { StatsRow } from '@/components/dashboard/StatsRow'
 import { DashboardGrid } from '@/components/dashboard/DashboardGrid'
 import { AiChatPanel } from '@/components/dashboard/AiChatPanel'
+import { MobileChat } from '@/components/dashboard/MobileChat'
 import { normalizeLayout } from '@/lib/widgets'
 
 export const metadata: Metadata = { title: 'Dashboard' }
@@ -30,10 +31,13 @@ export default async function DashboardPage() {
         <DashboardGrid initialLayout={layout} />
       </div>
 
-      {/* AI chat panel */}
+      {/* AI chat panel (desktop sidebar) */}
       <div className="w-80 shrink-0 hidden lg:block">
         <AiChatPanel />
       </div>
+
+      {/* AI chat (mobile floating button + sheet) */}
+      <MobileChat />
     </div>
   )
 }

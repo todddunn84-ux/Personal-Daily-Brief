@@ -69,9 +69,17 @@ export async function StatsRow({ userId, timezone }: { userId: string; timezone:
   ]
 
   return (
-    <div className="bg-surface-900 border border-surface-750 rounded-xl shadow-xs grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-surface-800">
-      {stats.map(({ icon: Icon, label, value, iconTone, valueTone }) => (
-        <div key={label} className="px-5 py-4 flex items-start justify-between gap-3">
+    <div className="bg-surface-900 border border-surface-750 rounded-xl shadow-xs grid grid-cols-2 lg:grid-cols-4">
+      {stats.map(({ icon: Icon, label, value, iconTone, valueTone }, i) => (
+        <div
+          key={label}
+          className={cn(
+            'px-4 md:px-5 py-4 flex items-start justify-between gap-3 border-surface-800',
+            i % 2 === 1 && 'border-l',
+            i >= 2 && 'border-t lg:border-t-0',
+            i > 0 && 'lg:border-l'
+          )}
+        >
           <div className="min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-surface-500 mb-1 truncate">
               {label}
