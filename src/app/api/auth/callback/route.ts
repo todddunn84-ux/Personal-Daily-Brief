@@ -14,8 +14,21 @@ export async function GET(request: Request) {
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`)
     }
+
+    // PKCE exchange needs the code_verifier cookie from the browser that
+    // STARTED the flow. Opening an email link on a different device (very
+    // common: sign up on desktop, tap the link on your phone) lands here with
+    // no verifier — but Supabase has already verified the email by that
+    // point, so send them to sign in rather than showing a failure.
+    if (error.message.toLowerCase().includes('code verifier')) {
+      return NextResponse.redirect(`${origin}/login?notice=confirmed`)
+    }
   }
 
-  // Return to login on error
+  // Supabase forwards failures (e.g. expired links) as error params
+  if (searchParams.get('error_code') === 'otp_expired') {
+    return NextResponse.redirect(`${origin}/login?error=link_expired`)
+  }
+
   return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`)
 }

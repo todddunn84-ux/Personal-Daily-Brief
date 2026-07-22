@@ -1,19 +1,33 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Zap } from 'lucide-react'
+import { Zap, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-export default function LoginPage() {
+const NOTICES: Record<string, string> = {
+  confirmed: 'Your email is confirmed — sign in below to continue.',
+}
+
+const ERRORS: Record<string, string> = {
+  link_expired: 'That link has expired. Sign in with your password, or sign up again for a new one.',
+  confirm_failed: "We couldn't confirm that link. Try signing in — if that fails, sign up again for a fresh link.",
+  auth_callback_failed: "We couldn't complete sign-in from that link. Please sign in with your email and password.",
+}
+
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const notice = NOTICES[searchParams.get('notice') ?? '']
+  const linkError = ERRORS[searchParams.get('error') ?? '']
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -39,7 +53,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
           <div className="w-9 h-9 rounded-lg bg-brand-500 flex items-center justify-center">
-            <Zap className="w-5 h-5 text-white" />
+            <Zap className="w-5 h-5 text-accent-light" />
           </div>
           <span className="text-xl font-bold text-surface-100">DayBrief</span>
         </div>
@@ -48,6 +62,19 @@ export default function LoginPage() {
         <div className="bg-surface-900 rounded-2xl border border-surface-800 p-8">
           <h1 className="text-xl font-semibold text-surface-100 mb-1">Welcome back</h1>
           <p className="text-sm text-surface-400 mb-6">Sign in to your account</p>
+
+          {notice && (
+            <p className="flex items-start gap-2 text-sm text-success bg-success/10 border border-success/20 rounded-lg px-3 py-2 mb-4">
+              <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
+              {notice}
+            </p>
+          )}
+
+          {linkError && (
+            <p className="text-sm text-warning bg-warning/10 border border-warning/20 rounded-lg px-3 py-2 mb-4">
+              {linkError}
+            </p>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -107,5 +134,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   )
 }
